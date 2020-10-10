@@ -18,7 +18,7 @@ class SteamConnect:
     def __init__(self, steam_path, sda_path, steam_account: SteamAccount):
         self.steam_account = steam_account
 
-        if self.steam_account.check_box:
+        if self.steam_account.check_box and sda_path:
             try:
                 self.app_sda = pywinauto.Application(backend="win32").connect(path=sda_path)
             except pywinauto.application.ProcessNotFoundError:

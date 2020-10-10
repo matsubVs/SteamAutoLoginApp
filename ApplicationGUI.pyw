@@ -3,17 +3,17 @@ from tkinter import ttk
 from tkinter import Menu
 from tkinter import messagebox
 from tkinter import StringVar, BooleanVar
+from tkinter import filedialog as fd
 from database import DB
 from crypto import crypto_sys
 from steam_connection import SteamAccount, SteamConnect
-
-st_path = r"D:\Steam\steam.exe"
-sd_path = r"C:\Users\matsubus\Documents\steamdesktop\Steam Desktop Authenticator.exe"
 
 
 class SteamConnectionGui:
 
     def __init__(self, root: tk):
+        self.steam_path = open('files/steam_path.txt', 'r').read()
+        self.sda_path = open('files/sda_path.txt', 'r').read()
         self.root = root
         self.root.geometry('250x250+600+300')
         self.root.resizable(False, False)
@@ -57,8 +57,25 @@ class SteamConnectionGui:
 
         edit_menu = Menu(menu_bar, tearoff=0)
         menu_bar.add_cascade(label="Settings", menu=edit_menu)
+        edit_menu.add_command(label="Path to Steam", command=self.get_steam_path)
+        edit_menu.add_command(label="Path to SDA", command=self.get_sda_path)
 
         self.root.configure(menu=menu_bar)
+
+    def get_steam_path(self):
+        filedialog = fd.askopenfilename()
+        if filedialog:
+            self.steam_path = str(filedialog)
+            print(self.steam_path)
+            with open('files/steam_path.txt', 'w') as f:
+                f.write(r''.join(self.steam_path))
+
+    def get_sda_path(self):
+        filedialog = fd.askopenfilename()
+        if filedialog:
+            self.sda_path = str(filedialog)
+            with open('files/sda_path.txt', 'w') as f:
+                f.write(r''.join(self.sda_path))
 
     def create_new_window(self):
         self.new_window = NewAccountWindow(main_window)
@@ -86,7 +103,7 @@ class SteamConnectionGui:
         password = self.get_password()
         sda = self.get_sda()
         steam_acc = SteamAccount(self.combobox.get(), password, sda)
-        st_connection = SteamConnect(st_path, sd_path, steam_account=steam_acc)
+        st_connection = SteamConnect(self.steam_path, self.sda_path, steam_account=steam_acc)
         st_connection.start()
 
     def configure_accouns_window(self):
