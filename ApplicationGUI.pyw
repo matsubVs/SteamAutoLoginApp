@@ -12,8 +12,16 @@ from steam_connection import SteamAccount, SteamConnect
 class SteamConnectionGui:
 
     def __init__(self, root: tk):
-        self.steam_path = open('files/steam_path.txt', 'r').read()
-        self.sda_path = open('files/sda_path.txt', 'r').read()
+        try:
+            self.steam_path = open('files/steam_path.txt', 'r').read()
+        except FileNotFoundError:
+            self.steam_path = None
+
+        try:
+            self.sda_path = open('files/sda_path.txt', 'r').read()
+        except FileNotFoundError:
+            self.steam_path = None
+
         self.root = root
         self.root.geometry('250x250+600+300')
         self.root.resizable(False, False)
