@@ -20,7 +20,7 @@ class SteamConnectionGui:
         try:
             self.sda_path = open('files/sda_path.txt', 'r').read()
         except FileNotFoundError:
-            self.steam_path = None
+            self.sda_path = None
 
         self.root = root
         self.root.geometry('250x250+600+300')

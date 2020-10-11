@@ -1,6 +1,4 @@
 @echo off
 
-call "venv\Scripts\activate.bat"
-
-start pythonw ApplicationGUI.pyw
+start venv\Scripts\python ApplicationGUI.pyw
 exit
