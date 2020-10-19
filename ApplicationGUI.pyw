@@ -143,8 +143,7 @@ class SteamConnectionGui:
             self.draw_widgets()
 
     def close_system(self):
-        if messagebox.askokcancel("Quit", "Do you want to quit?"):
-            self.root.destroy()
+        self.root.destroy()
 
     def run(self):
         self.draw_widgets()
