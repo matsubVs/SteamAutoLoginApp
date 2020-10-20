@@ -1,6 +1,7 @@
 import os
 
-BASE_DIR = os.getcwd()
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+print(BASE_DIR)
 
 LOGGING = {
     'version': 1,
@@ -15,7 +16,7 @@ LOGGING = {
         'file': {
             'level': 'DEBUG',
             'class': 'logging.FileHandler',
-            'filename': r'C:\Users\matsubus\PycharmProjects\AutoLoginSteamProj\src\src\log.log',
+            'filename': fr'{BASE_DIR}\src\log.log',
             'formatter': 'custom_formatter'
             },
         },
