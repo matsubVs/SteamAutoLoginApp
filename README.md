@@ -5,7 +5,7 @@ The project was created to automate the transition between different accounts (w
 # How to install
   1. Install python: https://www.python.org/downloads/
   2. Clone this git repo
-  3. Use the following command in yoor folder: pip install -r requirements.txt
+  3. Use the following command in your folder: pip install -r requirements.txt
  
  # How to use
   1. Insert the path to Steam into steam_path.txt file in "files" folder.
