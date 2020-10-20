@@ -1,6 +1,6 @@
 # Steam Auto Login Application
 
-The project was created to automate the transition between different accounts (with the possibility of using SDA)
+The project was created to automate the transition between different Steam accounts (with the possibility of using SDA)
 
 # How to install
   1. Install python: https://www.python.org/downloads/
