@@ -13,5 +13,5 @@ The project was created to automate the transition between different accounts (w
   3. run "start.bat" file
   
   Notes:
-    You can configure all paths inside the Application
-    If you want to use SDA, click on the corresponding checkbox in Add Account window
+    You can configure all paths inside the Application.
+    If you want to use SDA, click on the corresponding checkbox in Add Account window.
