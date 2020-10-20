@@ -1,5 +1,5 @@
-venv/
 .idea/
 __pycache__
 shortcuts.py
-files/
+files/accs.db
+files/crypto.txt
