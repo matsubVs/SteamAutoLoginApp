@@ -4,9 +4,15 @@ from tkinter import Menu
 from tkinter import messagebox
 from tkinter import StringVar, BooleanVar
 from tkinter import filedialog as fd
+
 from database import DB
 from crypto import crypto_sys
+
 from steam_connection import SteamAccount, SteamConnect
+
+import logging
+
+logger = logging.getLogger(__name__)
 
 
 class SteamConnectionGui:
@@ -15,6 +21,7 @@ class SteamConnectionGui:
         try:
             self.steam_path = open('files/steam_path.txt', 'r').read()
         except FileNotFoundError:
+            logger.debug("Path to steam not found!")
             self.steam_path = None
 
         try:
