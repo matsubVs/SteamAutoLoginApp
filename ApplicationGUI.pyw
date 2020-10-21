@@ -8,20 +8,17 @@ from tkinter import filedialog as fd
 from database import DB
 from crypto import crypto_sys
 
-from steam_connection import SteamAccount, SteamConnect
-
-import logging
-
-logger = logging.getLogger(__name__)
+from steam_connection import SteamAccount, CreateAccountConnection
 
 
-class SteamConnectionGui:
+class SteamConnectionGui(tk.Tk):
 
-    def __init__(self, root: tk):
+    def __init__(self):
+        super().__init__()
         try:
             self.steam_path = open('files/steam_path.txt', 'r').read()
         except FileNotFoundError:
-            logger.debug("Path to steam not found!")
+            # logger.debug("Path to steam not found!")
             self.steam_path = None
 
         try:
@@ -29,24 +26,23 @@ class SteamConnectionGui:
         except FileNotFoundError:
             self.sda_path = None
 
-        self.root = root
-        self.root.geometry('250x250+600+300')
-        self.root.resizable(False, False)
-        self.root.title("Steam Authorized")
-        self.root.protocol("WM_DELETE_WINDOW", self.close_system)
-        self.root.bind('<Escape>', lambda e: self.root.destroy())
+        self.geometry('250x250+600+300')
+        self.resizable(False, False)
+        self.title("Steam Authorized")
+        self.protocol("WM_DELETE_WINDOW", self.close_system)
+        self.bind('<Escape>', lambda e: self.destroy())
         self.new_window = None
 
-        self.powered_label = ttk.Label(self.root, text="Powered by matsubus", font=('Consolas', 8, 'bold'))
-        self.choose_label = ttk.Label(self.root, text="Choose Account", font=('Bahnschrift', 10, 'bold'))
-        self.entry_button = ttk.Button(self.root, text="Enter Account",
+        self.powered_label = ttk.Label(self, text="Powered by matsubus", font=('Consolas', 8, 'bold'))
+        self.choose_label = ttk.Label(self, text="Choose Account", font=('Bahnschrift', 10, 'bold'))
+        self.entry_button = ttk.Button(self, text="Enter Account",
                                        command=self.run_steam_connection)
-        self.add_account_button = ttk.Button(self.root, text="Add Account",
+        self.add_account_button = ttk.Button(self, text="Add Account",
                                              command=self.create_new_window)
-        self.configure_button = ttk.Button(self.root, text="Configure Account",
+        self.configure_button = ttk.Button(self, text="Configure Account",
                                            command=self.configure_accouns_window)
 
-        self.combobox = ttk.Combobox(self.root, values=self.fetch_account_names(), state='readonly')
+        self.combobox = ttk.Combobox(self, values=self.fetch_account_names(), state='readonly')
 
         if self.fetch_account_names():
             self.combobox.current(0)
@@ -61,7 +57,7 @@ class SteamConnectionGui:
         self.configure_button.place(relx=0.5, rely=0.7)
 
     def draw_menu(self):
-        menu_bar = Menu(self.root)
+        menu_bar = Menu(self)
 
         file_menu = Menu(menu_bar, tearoff=0)
         file_menu.add_command(label='Выйти', command=self.close_system)
@@ -75,7 +71,7 @@ class SteamConnectionGui:
         edit_menu.add_command(label="Path to Steam", command=self.get_steam_path)
         edit_menu.add_command(label="Path to SDA", command=self.get_sda_path)
 
-        self.root.configure(menu=menu_bar)
+        self.configure(menu=menu_bar)
 
     def get_steam_path(self):
         filedialog = fd.askopenfilename()
@@ -93,19 +89,18 @@ class SteamConnectionGui:
                 f.write(r''.join(self.sda_path))
 
     def create_new_window(self):
-        self.new_window = NewAccountWindow(main_window)
+        self.new_window = NewAccountWindow(self)
 
-    def get_data_from_child(self, child_window):
-        account_name = child_window.name_entry.get()
-        account_password = child_window.password_entry.get()
-        sda_checkbox = child_window.SDA_var.get()
+    def get_data_from_child(self):
+        account_name = self.new_window.name_entry.get()
+        account_password = self.new_window.password_entry.get()
+        sda_checkbox = self.new_window.SDA_var.get()
         print(sda_checkbox)
-        child_window.root.destroy()
+        self.new_window.destroy()
 
         DB.add_account(account_name, account_password, sda_checkbox)
 
-        self.combobox = ttk.Combobox(self.root, values=self.fetch_account_names(), state='readonly')
-        self.draw_widgets()
+        self.reload_combobox()
 
     @staticmethod
     def fetch_account_names():
@@ -118,11 +113,11 @@ class SteamConnectionGui:
         password = self.get_password()
         sda = self.get_sda()
         steam_acc = SteamAccount(self.combobox.get(), password, sda)
-        st_connection = SteamConnect(self.steam_path, self.sda_path, steam_account=steam_acc)
+        st_connection = CreateAccountConnection(self.steam_path, self.sda_path, steam_account=steam_acc)
         st_connection.start()
 
     def configure_accouns_window(self):
-        self.new_window = ConfigureAccountsWindow(main_window, self.combobox.get())
+        self.new_window = ConfigureAccountsWindow(self, self.combobox.get())
 
     def get_password(self):
         print('GUI', self.combobox.get())
@@ -146,39 +141,39 @@ class SteamConnectionGui:
             self.draw_widgets()
         else:
             [self.combobox.delete(i) for i in self.combobox.winfo_children()]
-            self.combobox = ttk.Combobox(self.root, values=self.fetch_account_names(), state='readonly')
+            self.combobox = ttk.Combobox(self, values=self.fetch_account_names(), state='readonly')
             self.draw_widgets()
 
     def close_system(self):
-        self.root.destroy()
+        self.destroy()
 
     def run(self):
         self.draw_widgets()
         self.draw_menu()
-        self.root.mainloop()
+        self.mainloop()
 
 
-class NewAccountWindow:
+class NewAccountWindow(tk.Toplevel):
 
     def __init__(self, master):
+        super().__init__(master)
         self.master = master
-        self.root = tk.Toplevel()
-        self.root.geometry('230x120+600+300')
-        self.root.resizable(False, False)
+        self.geometry('230x120+600+300')
+        self.resizable(False, False)
         self.SDA_var = BooleanVar()
         self.SDA_var.set(0)
 
-        self.name_entry = ttk.Entry(self.root, width=20)
-        self.password_entry = ttk.Entry(self.root, width=20, show="*")
-        self.btn = ttk.Button(self.root, text="Add Account",
-                              command=lambda: self.master.get_data_from_child(self.master.new_window))
-        self.name_label = ttk.Label(self.root, text="Login")
-        self.password_label = ttk.Label(self.root, text="Password")
-        self.j_label = ttk.Label(self.root, text="Enter Data:", font=('Bahnschrift', 10, 'bold'))
+        self.name_entry = ttk.Entry(self, width=20)
+        self.password_entry = ttk.Entry(self, width=20, show="*")
+        self.btn = ttk.Button(self, text="Add Account",
+                              command=self.master.get_data_from_child)
+        self.name_label = ttk.Label(self, text="Login")
+        self.password_label = ttk.Label(self, text="Password")
+        self.j_label = ttk.Label(self, text="Enter Data:", font=('Bahnschrift', 10, 'bold'))
         self.message_box = messagebox.showinfo("Info", "Your data is encrypted!!")
-        self.sda_checkbox = ttk.Checkbutton(self.root, text="SDA", variable=self.SDA_var, onvalue=1, offvalue=0)
-        self.root.grab_set()
-        self.root.focus()
+        self.sda_checkbox = ttk.Checkbutton(self, text="SDA", variable=self.SDA_var, onvalue=1, offvalue=0)
+        self.grab_set()
+        self.focus()
 
         self.draw_widgets()
 
@@ -192,7 +187,7 @@ class NewAccountWindow:
         self.sda_checkbox.grid(column=0, row=3, padx=3, pady=3)
 
 
-class ConfigureAccountsWindow:
+class ConfigureAccountsWindow(tk.Toplevel):
     counter = False
     # class_examples = 0
     #
@@ -205,6 +200,7 @@ class ConfigureAccountsWindow:
     #         return
 
     def __init__(self, master, account):
+        super().__init__(master)
         self.master = master
         self.account_name = account
 
@@ -213,21 +209,20 @@ class ConfigureAccountsWindow:
         else:
             ConfigureAccountsWindow.counter = True
 
-        self.root = tk.Toplevel()
-        self.root.bind('<Escape>', lambda e: self.root.destroy())
-        self.root.protocol("WM_DELETE_WINDOW", self.on_closing)
+        self.bind('<Escape>', lambda e: self.destroy())
+        self.protocol("WM_DELETE_WINDOW", self.on_closing)
 
-        self.root.geometry('250x120+600+300')
-        self.root.resizable(False, False)
-        self.root.title("Change Window")
-        self.str_var = StringVar(self.root, self.account_name)
+        self.geometry('250x120+600+300')
+        self.resizable(False, False)
+        self.title("Change Window")
+        self.str_var = StringVar(self, self.account_name)
 
-        self.account_label = ttk.Label(self.root, text="Login")
-        self.password_label = ttk.Label(self.root, text="Password")
-        self.account_entry = ttk.Entry(self.root, state='disable', textvariable=self.str_var)
-        self.password_entry = ttk.Entry(self.root, show='*')
-        self.delete_button = ttk.Button(self.root, text="Delete Account", command=self.delete_account)
-        self.accept_changes = ttk.Button(self.root, text="Accept Changes", command=self.accept_changes)
+        self.account_label = ttk.Label(self, text="Login")
+        self.password_label = ttk.Label(self, text="Password")
+        self.account_entry = ttk.Entry(self, state='disable', textvariable=self.str_var)
+        self.password_entry = ttk.Entry(self, show='*')
+        self.delete_button = ttk.Button(self, text="Delete Account", command=self.delete_account)
+        self.accept_changes = ttk.Button(self, text="Accept Changes", command=self.accept_changes)
 
         self.draw_widgets()
 
@@ -241,7 +236,6 @@ class ConfigureAccountsWindow:
 
     def delete_account(self):
         DB.delete_account(self.account_name)
-        self.master.combobox = ttk.Combobox(self.root, values=self.master.fetch_account_names(), state='readonly')
         self.master.reload_combobox()
         messagebox.showinfo("Successfull!", "Account successfully deleted!")
 
@@ -252,14 +246,13 @@ class ConfigureAccountsWindow:
             messagebox.showinfo("Successfull!", "Changes successfully accepted!")
         else:
             messagebox.showerror("Error!", "Check your data!")
-            self.root.grab_set()
-            self.root.focus()
+            self.grab_set()
+            self.focus()
 
     def on_closing(self):
         ConfigureAccountsWindow.counter = False
-        self.root.destroy()
+        self.destroy()
 
 
-app = tk.Tk()
-main_window = SteamConnectionGui(app)
-main_window.run()
+App = SteamConnectionGui()
+App.run()

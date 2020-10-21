@@ -13,7 +13,7 @@ class SteamAccount:
         self.check_box = True if check_box else False
 
 
-class SteamConnect:
+class CreateAccountConnection:
 
     def __init__(self, steam_path, sda_path, steam_account: SteamAccount):
         self.steam_account = steam_account
@@ -52,13 +52,14 @@ class SteamConnect:
                 break
 
     def exec_steam_code(self, code):
-        try:
-            self.app['Вход в Steam'].set_focus()
-        except pywinauto.findbestmatch.MatchError as e:
-            time.sleep(2)
+        # try:
+        #     self.app['Вход в Steam'].set_focus()
+        # except pywinauto.findbestmatch.MatchError:
+        #     time.sleep(2)
         print('STEAM_CONNECTION', code)
-        self.app['Вход в Steam'].set_focus()
-        time.sleep(2)
+        while not self.app['Steam Guard — Необходима авторизация компьютера']:
+            time.sleep(2)
+        self.app['Steam Guard — Необходима авторизация компьютера'].set_focus()
         keyboard.send_keys(f'{code}')
 
     def start(self):
