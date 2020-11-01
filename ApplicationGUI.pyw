@@ -7,8 +7,15 @@ from tkinter import filedialog as fd
 
 from database import DB
 from crypto import crypto_sys
+from settings import logger
 
 from steam_connection import SteamAccount, CreateAccountConnection
+
+
+f = open('files/sda_path.txt')
+f.close()
+f = open('files/steam_path.txt')
+f.close()
 
 
 class SteamConnectionGui(tk.Tk):
@@ -17,12 +24,17 @@ class SteamConnectionGui(tk.Tk):
         super().__init__()
         try:
             self.steam_path = open('files/steam_path.txt', 'r').read()
+            if not self.steam_path:
+                messagebox.showinfo('Неверный путь!', 'Укажите путь до steam.exe во вкладке настройки!')
+                logger.debug('Empty path to steam.exe!')
         except FileNotFoundError:
-            # logger.debug("Path to steam not found!")
             self.steam_path = None
 
         try:
             self.sda_path = open('files/sda_path.txt', 'r').read()
+            if not self.sda_path:
+                messagebox.showinfo('Неверный путь!', 'Укажите путь до SDA во вкладке настройки!')
+                logger.debug('Empty path to SDA!')
         except FileNotFoundError:
             self.sda_path = None
 
@@ -78,15 +90,15 @@ class SteamConnectionGui(tk.Tk):
         if filedialog:
             self.steam_path = str(filedialog)
             print(self.steam_path)
-            with open('files/steam_path.txt', 'w') as f:
-                f.write(r''.join(self.steam_path))
+            with open('files/steam_path.txt', 'w') as file:
+                file.write(r''.join(self.steam_path))
 
     def get_sda_path(self):
         filedialog = fd.askopenfilename()
         if filedialog:
             self.sda_path = str(filedialog)
-            with open('files/sda_path.txt', 'w') as f:
-                f.write(r''.join(self.sda_path))
+            with open('files/sda_path.txt', 'w') as file:
+                file.write(r''.join(self.sda_path))
 
     def create_new_window(self):
         self.new_window = NewAccountWindow(self)
@@ -244,6 +256,7 @@ class ConfigureAccountsWindow(tk.Toplevel):
         if len(passw) >= 3:
             DB.update_account(self.account_name, passw)
             messagebox.showinfo("Successfull!", "Changes successfully accepted!")
+            self.destroy()
         else:
             messagebox.showerror("Error!", "Check your data!")
             self.grab_set()

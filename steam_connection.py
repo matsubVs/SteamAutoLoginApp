@@ -2,6 +2,7 @@ import pywinauto
 import pywinauto.keyboard as keyboard
 import pywinauto.clipboard as clipboard
 import time
+from settings import logger
 
 
 class SteamAccount:
@@ -33,7 +34,10 @@ class CreateAccountConnection:
             # subprocess.call(args)
 
         path_with_args = steam_path + f' -login {steam_account.account_name} {steam_account.account_pass}'
-        self.app = pywinauto.Application(backend="win32").start(path_with_args)
+        try:
+            self.app = pywinauto.Application(backend="win32").start(path_with_args)
+        except pywinauto.application.AppStartError:
+            logger.debug('Отсутствует путь до steam.exe')
 
     def pull_out_sda_code(self):
         sda_control = self.app_sda['Steam Desktop Authenticator']
@@ -57,6 +61,8 @@ class CreateAccountConnection:
         # except pywinauto.findbestmatch.MatchError:
         #     time.sleep(2)
         print('STEAM_CONNECTION', code)
+        if self.app['SteamBootstrapUpdateUIClass']:
+            time.sleep(2)
         while not self.app['Steam Guard — Необходима авторизация компьютера']:
             time.sleep(2)
         self.app['Steam Guard — Необходима авторизация компьютера'].set_focus()
