@@ -10,3 +10,4 @@ formatter = logging.Formatter('%(levelname)s - %(asctime)s - %(module)s:  %(mess
 fh.setFormatter(formatter)
 logger.addHandler(fh)
 
+# Проверка кодировки
