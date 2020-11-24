@@ -52,7 +52,7 @@ class SteamConnectionGui(tk.Tk):
         self.add_account_button = ttk.Button(self, text="Add Account",
                                              command=self.create_new_window)
         self.configure_button = ttk.Button(self, text="Configure Account",
-                                           command=self.configure_accouns_window)
+                                           command=self.configure_accounts_window)
 
         self.combobox = ttk.Combobox(self, values=self.fetch_account_names(), state='readonly')
 
@@ -128,7 +128,7 @@ class SteamConnectionGui(tk.Tk):
         st_connection = CreateAccountConnection(self.steam_path, self.sda_path, steam_account=steam_acc)
         st_connection.start()
 
-    def configure_accouns_window(self):
+    def configure_accounts_window(self):
         self.new_window = ConfigureAccountsWindow(self, self.combobox.get())
 
     def get_password(self):
@@ -249,13 +249,13 @@ class ConfigureAccountsWindow(tk.Toplevel):
     def delete_account(self):
         DB.delete_account(self.account_name)
         self.master.reload_combobox()
-        messagebox.showinfo("Successfull!", "Account successfully deleted!")
+        messagebox.showinfo("Successful!", "Account successfully deleted!")
 
     def accept_changes(self):
         passw = self.password_entry.get()
         if len(passw) >= 3:
             DB.update_account(self.account_name, passw)
-            messagebox.showinfo("Successfull!", "Changes successfully accepted!")
+            messagebox.showinfo("Successful!", "Changes successfully accepted!")
             self.destroy()
         else:
             messagebox.showerror("Error!", "Check your data!")
